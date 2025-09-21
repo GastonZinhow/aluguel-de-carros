@@ -43,7 +43,7 @@ const ClientCRUD = () => {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080");
+      const response = await fetch("http://localhost:8080/clients");
       if (!response.ok) throw new Error("Erro ao buscar clientes");
       const data = await response.json();
       setClients(data);
@@ -57,7 +57,7 @@ const ClientCRUD = () => {
   // Criar cliente
   const createClient = async (clientData: Client) => {
     try {
-      const response = await fetch(API_BASE_URL, {
+      const response = await fetch(API_BASE_URL + 'clients', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -218,7 +218,7 @@ const ClientCRUD = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
         <div className="card">
           {/* Header */}
