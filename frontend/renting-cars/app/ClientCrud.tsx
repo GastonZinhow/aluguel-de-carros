@@ -3,6 +3,7 @@ interface Client {
   id?: number;
   rg: string;
   cpf: string;
+  name: string;
   occupation: string;
   address: string;
   income: number[];
@@ -29,6 +30,7 @@ const ClientCRUD = () => {
   const [currentClient, setCurrentClient] = useState<Client>({
     rg: "",
     cpf: "",
+    name: "",
     occupation: "",
     address: "",
     income: [],
@@ -48,7 +50,7 @@ const ClientCRUD = () => {
       const data = await response.json();
       setClients(data);
     } catch (err) {
-      setError("Erro ao carregar clientes: " + err.message);
+      setError("Erro ao carregar clientes: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setLoading(false);
     }
@@ -67,14 +69,14 @@ const ClientCRUD = () => {
       if (!response.ok) throw new Error("Erro ao criar cliente");
       return await response.json();
     } catch (err) {
-      throw new Error("Erro ao criar cliente: " + err.message);
+      throw new Error("Erro ao criar cliente: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 
   // Atualizar cliente
   const updateClient = async (id: number | undefined, clientData: Client) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
+      const response = await fetch(`${API_BASE_URL}clients/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -84,19 +86,19 @@ const ClientCRUD = () => {
       if (!response.ok) throw new Error("Erro ao atualizar cliente");
       return await response.json();
     } catch (err) {
-      throw new Error("Erro ao atualizar cliente: " + err.message);
+      throw new Error("Erro ao atualizar cliente: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 
   // Deletar cliente
   const deleteClient = async (id: number | undefined) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
+      const response = await fetch(`${API_BASE_URL}clients/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Erro ao deletar cliente");
     } catch (err) {
-      throw new Error("Erro ao deletar cliente: " + err.message);
+      throw new Error("Erro ao deletar cliente: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 
@@ -104,7 +106,7 @@ const ClientCRUD = () => {
     fetchClients();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -114,12 +116,8 @@ const ClientCRUD = () => {
       // Processar income e company (converter strings em arrays)
       const processedClient = {
         ...currentClient,
-        income: currentClient.income.filter(
-          (income) => income !== "" && income !== null
-        ),
-        company: currentClient.company.filter(
-          (company) => company.trim() !== ""
-        ),
+        income: currentClient.income.filter((income) => typeof income === 'number' && !isNaN(income)),
+        company: currentClient.company.filter((company) => company.trim() !== ""),
       };
 
       if (isEditing) {
@@ -131,7 +129,7 @@ const ClientCRUD = () => {
       await fetchClients();
       resetForm();
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -150,7 +148,7 @@ const ClientCRUD = () => {
         await deleteClient(id);
         await fetchClients();
       } catch (err) {
-        setError(err.message);
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -161,6 +159,7 @@ const ClientCRUD = () => {
     setCurrentClient({
       rg: "",
       cpf: "",
+      name: "",
       occupation: "",
       address: "",
       income: [],
@@ -174,7 +173,7 @@ const ClientCRUD = () => {
   const addIncomeField = () => {
     setCurrentClient((prev) => ({
       ...prev,
-      income: [...prev.income, ""],
+      income: [...prev.income, 0],
     }));
   };
 
@@ -257,6 +256,7 @@ const ClientCRUD = () => {
                 <tr>
                   <th className="table-header">RG</th>
                   <th className="table-header">CPF</th>
+                  <th className="table-header">Nome</th>
                   <th className="table-header">Ocupação</th>
                   <th className="table-header">Endereço</th>
                   <th className="table-header">Rendas</th>
@@ -272,6 +272,7 @@ const ClientCRUD = () => {
                   >
                     <td className="table-cell">{client.rg}</td>
                     <td className="table-cell">{client.cpf}</td>
+                    <td className="table-cell">{client.name}</td>
                     <td className="table-cell">{client.occupation}</td>
                     <td className="table-cell max-w-xs truncate">
                       {client.address}
@@ -338,7 +339,7 @@ const ClientCRUD = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <FileText className="inline w-4 h-4 mr-1" />
@@ -376,6 +377,26 @@ const ClientCRUD = () => {
                       }
                       className="form-input"
                       placeholder="Digite o CPF"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <User className="inline w-4 h-4 mr-1" />
+                      Nome *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={currentClient.name}
+                      onChange={(e) =>
+                        setCurrentClient((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      className="form-input"
+                      placeholder="Digite o nome"
                     />
                   </div>
                 </div>

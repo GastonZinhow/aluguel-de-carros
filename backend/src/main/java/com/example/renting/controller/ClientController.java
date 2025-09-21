@@ -48,9 +48,9 @@ public class ClientController {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Client> update(@PathVariable Client obj) {
-		obj = clientService.updateClient(obj);
-		return ResponseEntity.ok().body(obj);
+	public ResponseEntity<Client> update(@PathVariable Integer id, @RequestBody Client clientData) {
+		Client updatedClient = clientService.updateClient(id, clientData);
+		return ResponseEntity.ok(updatedClient);
 	}
 
 	@DeleteMapping(value = "/{id}")

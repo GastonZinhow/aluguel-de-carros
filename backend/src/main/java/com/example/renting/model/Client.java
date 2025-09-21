@@ -21,6 +21,8 @@ public class Client {
     private String rg;
     @Column(name="cpf", unique = true, nullable = false)
     private String cpf;
+    @Column(name="name", nullable = false)
+    private String name;
     @Column(name="occupation", nullable = false)
     private String occupation;
     @Column(name="address", nullable = false)

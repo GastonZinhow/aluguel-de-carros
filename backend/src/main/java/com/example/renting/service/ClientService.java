@@ -60,25 +60,23 @@ public class ClientService {
         }
     }
 
-    public Client updateClient(Client client) {
-        try {
-            if (client == null) {
-                throw new IllegalArgumentException("Cliente não pode ser nulo");
-            }
-
-            Integer id = client.getId();
-            Optional<Client> existingClient = clientRepository.findById(id);
-
-
-            if (existingClient.isEmpty()) {
-                throw new NoSuchElementException("Cliente não encontrado com ID: " + id);
-            }
-
-            clientRepository.save(client);
-            return client;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao alterar cliente: " + e.getMessage(), e);
+    public Client updateClient(Integer id, Client newData) {
+        if (newData == null) {
+            throw new IllegalArgumentException("Cliente não pode ser nulo");
         }
+
+        Client existingClient = clientRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com ID: " + id));
+
+        existingClient.setName(newData.getName());
+        existingClient.setCpf(newData.getCpf());
+        existingClient.setRg(newData.getRg());
+        existingClient.setOccupation(newData.getOccupation());
+        existingClient.setAddress(newData.getAddress());
+        existingClient.setIncome(newData.getIncome());
+        existingClient.setCompany(newData.getCompany());
+
+        return clientRepository.save(existingClient);
     }
 
     public boolean deleteClient(Integer id) {
