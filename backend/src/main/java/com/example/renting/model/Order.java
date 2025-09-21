@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+import com.example.renting.model.enums.OrderStatus;
+
 
 @Data
 @Builder
@@ -29,7 +31,7 @@ public class Order {
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
-    private Integer orderStatus;
+    private OrderStatus orderStatus;
 
     private Double rentalPrice;
 

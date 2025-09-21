@@ -65,7 +65,8 @@ public class OrderService {
     public boolean updateStatus(Integer id, Integer status) {
         return orderRepository.findById(id).map(order -> {
             try {
-                order.setOrderStatus(status);
+                OrderStatus os = OrderStatus.valueOf(status); 
+                order.setOrderStatus(os);
                 orderRepository.save(order);
                 return true;
             } catch (IllegalArgumentException e) {
