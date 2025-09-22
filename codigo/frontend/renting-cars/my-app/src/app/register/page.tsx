@@ -2,66 +2,147 @@
 
 import { useState } from "react";
 import api from "@/utils/axios";
-import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
+  const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", { username, password, role });
-      toast.success("Usuário registrado com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao registrar usuário.");
+      await api.post("/auth/register", { login, password, role });
+      alert("Cadastro realizado com sucesso!");
+      router.push("/login");
+    } catch (err) {
+      alert("Erro ao cadastrar usuário!");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-gray-200">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-extrabold text-center text-blue-600 mb-6">
-          Criar Conta
-        </h1>
-        <form onSubmit={handleRegister} className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Usuário"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none font-[Petra]"
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none font-[Petra]"
-          />
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 outline-none font-[Petra]"
+    <div
+      className={poppins.className}
+      style={{
+        backgroundColor: "#d3d3d3",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <h1
+        style={{
+          color: "black",
+          marginBottom: "2rem",
+        }}
+      >
+        Sistema de Aluguel de Carros
+      </h1>
+
+
+      <form
+        onSubmit={handleRegister}
+        style={{
+          backgroundColor: "white",
+          padding: "2rem",
+          borderRadius: "10px",
+          width: "500px",
+          boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "1rem",
+            color: "#003366",
+          }}
+        >
+          Registrar
+        </h2>
+        <input
+          type="text"
+          placeholder="Usuário"
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "1rem",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "1rem",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "1rem",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <option value="USER">Usuário</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: "10px",
+            backgroundColor: "#003366",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Registrar
+        </button>
+
+        <p
+          style={{
+            marginTop: "1rem",
+            textAlign: "center",
+            color: "black",
+          }}
+        >
+          Já tem uma conta?{" "}
+          <span
+            onClick={() => router.push("/login")}
+            style={{
+              color: "#003366",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
           >
-            <option value="USER">Cliente</option>
-            <option value="AGENT">Agente</option>
-          </select>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Registrar
-          </button>
-        </form>
-        <p className="text-sm text-center text-gray-600 mt-4">
-          Já tem conta?{" "}
-          <a href="/login" className="text-blue-600 font-medium hover:underline">
             Faça login
-          </a>
+          </span>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
