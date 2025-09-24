@@ -20,7 +20,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const user = localStorage.getItem("username");
     if (!user) {
-      router.push("/login");
+      router.push("/auth/login");
     } else {
       setUsername(user);
     }
@@ -36,7 +36,7 @@ export default function ProfilePage() {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("profileImage");
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

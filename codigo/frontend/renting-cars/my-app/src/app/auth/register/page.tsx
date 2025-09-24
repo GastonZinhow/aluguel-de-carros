@@ -21,7 +21,7 @@ export default function RegisterPage() {
     try {
       await api.post("/auth/register", { login, password, role });
       alert("Cadastro realizado com sucesso!");
-      router.push("/login");
+      router.push("/auth/login");
     } catch (err) {
       alert("Erro ao cadastrar usuário!");
     }
@@ -132,7 +132,7 @@ export default function RegisterPage() {
         >
           Já tem uma conta?{" "}
           <span
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/auth/login")}
             style={{
               color: "#003366",
               cursor: "pointer",
