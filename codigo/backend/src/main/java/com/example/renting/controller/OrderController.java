@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.example.renting.dto.OrderDTO;
 import com.example.renting.model.Order;
 import com.example.renting.service.OrderService;
 
@@ -21,8 +22,8 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> findAll() {
-        List<Order> list = orderService.findAll();
+    public ResponseEntity<List<OrderDTO>> findAll() {
+        List<OrderDTO> list = orderService.findAllDTOs();
         return ResponseEntity.ok().body(list);
     }
 
