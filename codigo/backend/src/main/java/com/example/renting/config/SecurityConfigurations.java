@@ -38,7 +38,10 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/orders").hasRole("ADMIN")
+                        .requestMatchers("/vehicles", "/vehicles/**").permitAll()
+                        .requestMatchers("/orders/**").hasRole("ADMIN")
+                        .requestMatchers("/agents/**").permitAll()
+                        .requestMatchers("/contracts/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
