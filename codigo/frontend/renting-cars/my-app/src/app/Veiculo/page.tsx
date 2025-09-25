@@ -12,6 +12,7 @@ const poppins = Poppins({
 export default function VehiclesPage() {
   const [form, setForm] = useState({
     Placa: "",
+    Registro: "",
     Ano: "",
     Marca: "",
     Modelo: "",
@@ -26,7 +27,7 @@ export default function VehiclesPage() {
     try {
       await api.post("/vehicles", form);
       alert("Veículo cadastrado com sucesso!");
-      setForm({ Placa: "", Ano: "", Marca: "", Modelo: "" });
+      setForm({ Placa: "", Registro: "", Ano: "", Marca: "", Modelo: "" });
     } catch {
       alert("Erro ao cadastrar veículo!");
     }
