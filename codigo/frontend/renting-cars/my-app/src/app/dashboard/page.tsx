@@ -82,7 +82,7 @@ export default function DashboardPage() {
               icon="📋"
             />
             <ActionCard
-              href="/cliente" 
+              href="/cliente/create" 
               title="Clientes"
               description="Gerencie e cadastre os clientes."
               icon="🧑‍💼"

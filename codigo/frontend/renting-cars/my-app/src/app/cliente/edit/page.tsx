@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
 
-const poppins = Poppins({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-});
+const poppins = Poppins({ weight: ["400", "600"], subsets: ["latin"] });
 
-export default function ClientsPage() {
+export default function EditClientPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const [form, setForm] = useState({
     name: "",
     cpf: "",
@@ -20,27 +21,20 @@ export default function ClientsPage() {
     income: "",
   });
 
+  useEffect(() => {
+    if (id) {
+      api.get(`/clients/${id}`).then((res) => setForm(res.data));
+    }
+  }, [id]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await api.post("/clients", form);
-      alert("Cliente cadastrado com sucesso!");
-      setForm({
-        name: "",
-        cpf: "",
-        rg: "",
-        address: "",
-        profession: "",
-        employer: "",
-        income: "",
-      });
-    } catch {
-      alert("Erro ao cadastrar cliente!");
-    }
+    await api.put(`/clients/${id}`, form);
+    alert("Cliente atualizado!");
   };
 
   return (
@@ -65,7 +59,7 @@ export default function ClientsPage() {
         }}
       >
         <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#003366" }}>
-          Cadastrar Cliente
+          Editar Cliente
         </h2>
 
         {["name", "cpf", "rg", "address", "profession", "employer", "income"].map((field) => (
@@ -98,7 +92,7 @@ export default function ClientsPage() {
             cursor: "pointer",
           }}
         >
-          Salvar
+          Salvar Alterações
         </button>
       </form>
     </div>
