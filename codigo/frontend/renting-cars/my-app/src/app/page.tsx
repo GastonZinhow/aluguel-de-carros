@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-600 to-indigo-700 text-black px-6">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-grey text-white px-6">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 text-center">
         🚗 CarRental System
       </h1>
@@ -14,13 +14,13 @@ export default function HomePage() {
       <div className="flex gap-6">
         <Link
           href="/auth/register"
-          className="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-gray-200 transition"
+          className="bg-white text-blue-700 w-30 h-10 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center"
         >
           Criar Conta
         </Link>
         <Link
           href="/auth/login"
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-400 transition"
+          className="bg-blue-500 text-white w-30 h-10 px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-400 transition flex items-center justify-center"
         >
           Entrar
         </Link>
