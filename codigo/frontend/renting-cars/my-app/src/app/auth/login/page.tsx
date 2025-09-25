@@ -21,7 +21,7 @@ export default function LoginPage() {
       const res = await api.post("/auth/login", { username, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("username", res.data.name);
-      router.push("/layout");
+      router.push("/dashboard");
     } catch (err) {
       alert("Usuário ou senha inválidos!");
     }
