@@ -48,7 +48,7 @@ public class VehicleService {
             if(vehicle == null){
                 throw new IllegalArgumentException("Veiculo nao pode ser null");
             }
-            if(vehicleRepository.findByPlate(vehicle.getPlate()) != null){
+            if(vehicleRepository.findByPlate(vehicle.getPlate()).isPresent()){
                 throw new IllegalArgumentException("Placa ja cadastrada");
             }
 
