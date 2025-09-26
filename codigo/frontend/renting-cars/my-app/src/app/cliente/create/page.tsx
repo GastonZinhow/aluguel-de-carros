@@ -208,7 +208,6 @@ export default function CreateClientPage() {
           style={inputStyle}
         />
 
-        {/* Income list */}
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Rendas</label>
           {form.income.length === 0 && (
@@ -236,7 +235,6 @@ export default function CreateClientPage() {
           </button>
         </div>
 
-        {/* Company list */}
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Empregadores / Empresas</label>
           {form.company.length === 0 && (
