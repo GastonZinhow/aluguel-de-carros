@@ -4,8 +4,12 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
+import Header from "@/app/components/Header";
 
-const poppins = Poppins({ weight: ["400", "500", "600", "700"], subsets: ["latin"] });
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
 
 interface ClientForm {
   name: string;
@@ -31,11 +35,17 @@ export default function EditClientPage() {
     company: [],
   });
 
+  const [successMessage, setSuccessMessage] = useState<string | null>();
+
   useEffect(() => {
     if (id) {
       api.get(`/clients/${id}`).then((res) => {
         const data = res.data as ClientForm;
-        setForm({ ...data, income: data.income || [], company: data.company || [] });
+        setForm({
+          ...data,
+          income: data.income || [],
+          company: data.company || [],
+        });
       });
     }
   }, [id]);
@@ -53,9 +63,13 @@ export default function EditClientPage() {
     });
   };
 
-  const addIncome = () => setForm((prev) => ({ ...prev, income: [...prev.income, 0] }));
+  const addIncome = () =>
+    setForm((prev) => ({ ...prev, income: [...prev.income, 0] }));
   const removeIncome = (index: number) =>
-    setForm((prev) => ({ ...prev, income: prev.income.filter((_, i) => i !== index) }));
+    setForm((prev) => ({
+      ...prev,
+      income: prev.income.filter((_, i) => i !== index),
+    }));
 
   const handleCompanyChange = (index: number, value: string) => {
     setForm((prev) => {
@@ -65,16 +79,20 @@ export default function EditClientPage() {
     });
   };
 
-  const addCompany = () => setForm((prev) => ({ ...prev, company: [...prev.company, ""] }));
+  const addCompany = () =>
+    setForm((prev) => ({ ...prev, company: [...prev.company, ""] }));
   const removeCompany = (index: number) =>
-    setForm((prev) => ({ ...prev, company: prev.company.filter((_, i) => i !== index) }));
+    setForm((prev) => ({
+      ...prev,
+      company: prev.company.filter((_, i) => i !== index),
+    }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.put(`/clients/${id}`, form);
-      alert("Cliente atualizado com sucesso!");
-      router.push("/cliente/list");
+      setSuccessMessage("Cliente atualizado com sucesso!");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
       console.error(err);
       alert("Erro ao atualizar cliente!");
@@ -82,107 +100,232 @@ export default function EditClientPage() {
   };
 
   return (
-    <div
-      className={poppins.className}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        backgroundColor: "#d3d3d3",
-        padding: "2rem",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <>
+      <Header></Header>
+      <div
+        className={poppins.className}
         style={{
-          backgroundColor: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          backgroundColor: "#d3d3d3",
           padding: "2rem",
-          borderRadius: "10px",
-          width: "600px",
-          boxShadow: "0 0 15px rgba(0,0,0,0.3)",
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#003366" }}>
-          Editar Cliente
-        </h2>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "10px",
+            width: "600px",
+            boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "1rem",
+              color: "#003366",
+            }}
+          >
+            Editar Cliente
+          </h2>
 
-        {(["name", "cpf", "rg", "occupation", "address"] as const).map((field) => (
-          <input
-            key={field}
-            type="text"
-            name={field}
-            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-            value={form[field]}
-            onChange={handleChange}
+          {(["name", "cpf", "rg", "occupation", "address"] as const).map(
+            (field) => (
+              <input
+                key={field}
+                type="text"
+                name={field}
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                value={form[field]}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "1rem",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+                required
+              />
+            )
+          )}
+
+          {/* Income list */}
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#003366",
+              }}
+            >
+              Rendas
+            </label>
+            {form.income.length === 0 && (
+              <div style={{ color: "#666", marginBottom: "0.5rem" }}>
+                Nenhuma renda adicionada
+              </div>
+            )}
+            {form.income.map((value, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder={`Renda ${idx + 1}`}
+                  value={String(value)}
+                  onChange={(e) => handleIncomeChange(idx, e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                  }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => removeIncome(idx)}
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#e74c3c",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addIncome}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "#0077bb",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              + Adicionar renda
+            </button>
+          </div>
+
+          {/* Company list */}
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#003366",
+              }}
+            >
+              Empresas
+            </label>
+            {form.company.length === 0 && (
+              <div style={{ color: "#666", marginBottom: "0.5rem" }}>
+                Nenhuma empresa adicionada
+              </div>
+            )}
+            {form.company.map((value, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder={`Empresa ${idx + 1}`}
+                  value={value}
+                  onChange={(e) => handleCompanyChange(idx, e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                  }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => removeCompany(idx)}
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#e74c3c",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addCompany}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "#0077bb",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              + Adicionar empresa
+            </button>
+          </div>
+
+          <button
+            type="submit"
             style={{
               width: "100%",
               padding: "10px",
-              marginBottom: "1rem",
+              backgroundColor: "#003366",
+              color: "white",
+              border: "none",
               borderRadius: "5px",
-              border: "1px solid #ccc",
+              cursor: "pointer",
             }}
-            required
-          />
-        ))}
-
-        {/* Income list */}
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600, color: "#003366" }}>
-            Rendas
-          </label>
-          {form.income.length === 0 && <div style={{ color: "#666", marginBottom: "0.5rem" }}>Nenhuma renda adicionada</div>}
-          {form.income.map((value, idx) => (
-            <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input
-                type="number"
-                step="0.01"
-                placeholder={`Renda ${idx + 1}`}
-                value={String(value)}
-                onChange={(e) => handleIncomeChange(idx, e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-                required
-              />
-              <button type="button" onClick={() => removeIncome(idx)} style={{ padding: "8px 12px", backgroundColor: "#e74c3c", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-                Remover
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={addIncome} style={{ padding: "8px 12px", backgroundColor: "#0077bb", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
-            + Adicionar renda
+          >
+            Salvar Alterações
           </button>
-        </div>
 
-        {/* Company list */}
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600, color: "#003366" }}>
-            Empresas
-          </label>
-          {form.company.length === 0 && <div style={{ color: "#666", marginBottom: "0.5rem" }}>Nenhuma empresa adicionada</div>}
-          {form.company.map((value, idx) => (
-            <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input
-                type="text"
-                placeholder={`Empresa ${idx + 1}`}
-                value={value}
-                onChange={(e) => handleCompanyChange(idx, e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-                required
-              />
-              <button type="button" onClick={() => removeCompany(idx)} style={{ padding: "8px 12px", backgroundColor: "#e74c3c", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-                Remover
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={addCompany} style={{ padding: "8px 12px", backgroundColor: "#0077bb", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
-            + Adicionar empresa
-          </button>
-        </div>
-
-        <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#003366", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-          Salvar Alterações
-        </button>
-      </form>
-    </div>
+          {successMessage && (
+            <p
+              style={{
+                marginTop: "1rem",
+                textAlign: "center",
+                color: "green",
+                fontWeight: "bold",
+              }}
+            >
+              {successMessage}
+            </p>
+          )}
+        </form>
+      </div>
+    </>
   );
 }

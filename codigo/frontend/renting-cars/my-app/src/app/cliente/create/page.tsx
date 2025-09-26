@@ -3,6 +3,7 @@
 import { useState } from "react";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
+import Header from "@/app/components/Header";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -15,8 +16,8 @@ type ClientForm = {
   rg: string;
   occupation: string;
   address: string;
-  income: number[];   
-  company: string[];  
+  income: number[];
+  company: string[];
 };
 
 type AxiosErrorResponse = {
@@ -39,16 +40,12 @@ export default function CreateClientPage() {
     company: [],
   });
 
+  const [successMessage, setSuccessMessage] = useState<string | null>();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-
-      [name]: value,
-    } as unknown as ClientForm));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleIncomeChange = (index: number, value: string) => {
     setForm((prev) => {
@@ -98,20 +95,19 @@ export default function CreateClientPage() {
     }
 
     try {
- 
       const payload: ClientForm = {
         ...form,
-        income: form.income.map((n) => Number(n)), 
+        income: form.income.map((n) => Number(n)),
         company: form.company.map((s) => String(s)),
       };
 
-      const res = await api.post<ClientForm>("/clients", payload, {
+      await api.post<ClientForm>("/clients", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      alert(`Cliente ${res.data.name} cadastrado com sucesso!`);
+      setSuccessMessage("Cadastro realizado com sucesso!");
       setForm({
         name: "",
         cpf: "",
@@ -121,12 +117,16 @@ export default function CreateClientPage() {
         income: [],
         company: [],
       });
+
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error: unknown) {
       const err = error as AxiosErrorResponse;
       console.error(err);
 
       if (err.response?.status === 403) {
-        alert("Você não tem permissão para criar clientes. Faça login novamente.");
+        alert(
+          "Você não tem permissão para criar clientes. Faça login novamente."
+        );
       } else if (err.response?.data?.message) {
         alert(`Erro: ${err.response.data.message}`);
       } else {
@@ -136,147 +136,228 @@ export default function CreateClientPage() {
   };
 
   return (
-    <div
-      className={poppins.className}
-      style={{
-        backgroundColor: "#d3d3d3",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <>
+      <Header></Header>
+      <div
+        className={poppins.className}
         style={{
-          backgroundColor: "white",
-          padding: "2rem",
-          borderRadius: "10px",
-          width: "600px",
-          boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+          backgroundColor: "#d3d3d3",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#003366" }}>
-          Cadastrar Cliente
-        </h2>
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Nome"
-          value={form.name}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="text"
-          name="cpf"
-          placeholder="CPF"
-          value={form.cpf}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="text"
-          name="rg"
-          placeholder="RG"
-          value={form.rg}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="text"
-          name="occupation"
-          placeholder="Profissão"
-          value={form.occupation}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Endereço"
-          value={form.address}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Rendas</label>
-          {form.income.length === 0 && (
-            <div style={{ marginBottom: "0.5rem", color: "#666" }}>Nenhuma renda adicionada</div>
-          )}
-          {form.income.map((value, idx) => (
-            <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input
-                type="number"
-                step="0.01"
-                placeholder={`Renda ${idx + 1}`}
-                value={String(value)}
-                onChange={(e) => handleIncomeChange(idx, e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-                required
-              />
-              <button type="button" onClick={() => removeIncome(idx)} style={smallButtonStyle}>
-                Remover
-              </button>
-            </div>
-          ))}
-
-          <button type="button" onClick={addIncome} style={secondaryButtonStyle}>
-            + Adicionar renda
-          </button>
-        </div>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Empregadores / Empresas</label>
-          {form.company.length === 0 && (
-            <div style={{ marginBottom: "0.5rem", color: "#666" }}>Nenhuma empresa adicionada</div>
-          )}
-          {form.company.map((value, idx) => (
-            <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input
-                type="text"
-                placeholder={`Empresa ${idx + 1}`}
-                value={value}
-                onChange={(e) => handleCompanyChange(idx, e.target.value)}
-                style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-                required
-              />
-              <button type="button" onClick={() => removeCompany(idx)} style={smallButtonStyle}>
-                Remover
-              </button>
-            </div>
-          ))}
-
-          <button type="button" onClick={addCompany} style={secondaryButtonStyle}>
-            + Adicionar empresa
-          </button>
-        </div>
-
-        <button
-          type="submit"
+        <form
+          onSubmit={handleSubmit}
           style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#003366",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "10px",
+            width: "600px",
+            boxShadow: "0 0 15px rgba(0,0,0,0.3)",
           }}
         >
-          Salvar
-        </button>
-      </form>
-    </div>
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "1rem",
+              color: "#003366",
+            }}
+          >
+            Cadastrar Cliente
+          </h2>
+
+          <input
+            type="text"
+            name="name"
+            placeholder="Nome"
+            value={form.name}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+
+          <input
+            type="text"
+            name="cpf"
+            placeholder="CPF"
+            value={form.cpf}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+
+          <input
+            type="text"
+            name="rg"
+            placeholder="RG"
+            value={form.rg}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+
+          <input
+            type="text"
+            name="occupation"
+            placeholder="Profissão"
+            value={form.occupation}
+            onChange={handleChange}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            name="address"
+            placeholder="Endereço"
+            value={form.address}
+            onChange={handleChange}
+            style={inputStyle}
+          />
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+              }}
+            >
+              Rendas
+            </label>
+            {form.income.length === 0 && (
+              <div style={{ marginBottom: "0.5rem", color: "#666" }}>
+                Nenhuma renda adicionada
+              </div>
+            )}
+            {form.income.map((value, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder={`Renda ${idx + 1}`}
+                  value={String(value)}
+                  onChange={(e) => handleIncomeChange(idx, e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                  }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => removeIncome(idx)}
+                  style={smallButtonStyle}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addIncome}
+              style={secondaryButtonStyle}
+            >
+              + Adicionar renda
+            </button>
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+              }}
+            >
+              Empregadores / Empresas
+            </label>
+            {form.company.length === 0 && (
+              <div style={{ marginBottom: "0.5rem", color: "#666" }}>
+                Nenhuma empresa adicionada
+              </div>
+            )}
+            {form.company.map((value, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder={`Empresa ${idx + 1}`}
+                  value={value}
+                  onChange={(e) => handleCompanyChange(idx, e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                  }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => removeCompany(idx)}
+                  style={smallButtonStyle}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addCompany}
+              style={secondaryButtonStyle}
+            >
+              + Adicionar empresa
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "#003366",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Salvar
+          </button>
+          {successMessage && (
+            <p
+              style={{
+                marginTop: "1rem",
+                textAlign: "center",
+                color: "green",
+                fontWeight: "bold",
+              }}
+            >
+              {successMessage}
+            </p>
+          )}
+        </form>
+      </div>
+    </>
   );
 }
 
