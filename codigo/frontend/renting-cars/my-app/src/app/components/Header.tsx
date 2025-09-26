@@ -40,7 +40,7 @@ export default function Header() {
             Dashboard
           </Link>
           <Link
-            href="/Pedido"
+            href="/Pedido/list"
             className={`hover:underline ${
               pathname === "/Pedido" ? "font-bold underline" : ""
             }`}
@@ -48,7 +48,7 @@ export default function Header() {
             Pedidos
           </Link>
           <Link
-            href="/cliente/list" // Atualizado para levar à lista de clientes
+            href="/cliente/list"
             className={`hover:underline ${
               pathname === "/cliente/list" ? "font-bold underline" : ""
             }`}
