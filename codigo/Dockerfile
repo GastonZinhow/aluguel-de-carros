@@ -2,41 +2,30 @@
 FROM node:22 AS frontend-build
 WORKDIR /app/frontend
 
-# Copia package.json e package-lock.json para instalar dependências
 COPY codigo/frontend/renting-cars/my-app/package*.json ./
 RUN npm install
-
-# Copia o restante do frontend
 COPY codigo/frontend/renting-cars/my-app/ ./
-
-# Build do Next.js
 RUN npm run build
 
 # Stage 2: Build backend (Spring Boot)
 FROM maven:3.9-eclipse-temurin-17 AS backend-build
 WORKDIR /app
 
-# Copia pom.xml e baixa dependências
-COPY codigo/backend/pom.xml .          
+COPY codigo/backend/pom.xml .
 RUN mvn dependency:go-offline
-
-# Copia o backend
-COPY codigo/backend/ .                
-
-# Copia os arquivos do frontend build para o backend (SSR + estáticos)
+COPY codigo/backend/ .
 COPY --from=frontend-build /app/frontend/.next ./src/main/resources/.next
 COPY --from=frontend-build /app/frontend/public ./src/main/resources/public
 COPY --from=frontend-build /app/frontend/package.json ./src/main/resources/frontend-package.json
 
-# Build do backend
 RUN mvn clean package -DskipTests
 
 # Stage 3: Runtime
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-# Copia o jar final
 COPY --from=backend-build /app/target/*.jar app.jar
 
-EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+# Usar porta dinâmica do Railway
+EXPOSE $PORT
+CMD ["sh", "-c", "java -Dserver.port=$PORT -jar app.jar"]
