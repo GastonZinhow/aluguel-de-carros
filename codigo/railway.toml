@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+
+# Caminho do Dockerfile relativo à raiz do repo
+dockerfilePath = "codigo/Dockerfile"
+
+# Contexto do build (aqui é a pasta codigo/, onde estão backend e frontend)
+context = "codigo"
