@@ -30,8 +30,6 @@ interface Order {
   vehicleModel: string;
   startDate: string;
   endDate: string;
-  startDate: string;
-  endDate: string;
   status: string;
 }
 
