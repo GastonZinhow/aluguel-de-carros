@@ -48,9 +48,9 @@ export default function Header() {
             Pedidos
           </Link>
           <Link
-            href="/cliente/create"
+            href="/cliente/list" // Atualizado para levar à lista de clientes
             className={`hover:underline ${
-              pathname === "/cliente/create" ? "font-bold underline" : ""
+              pathname === "/cliente/list" ? "font-bold underline" : ""
             }`}
           >
             Clientes
