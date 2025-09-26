@@ -3,6 +3,7 @@ package com.example.renting.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.renting.dto.OrderDTO;
 import com.example.renting.model.Client;
 import com.example.renting.model.Order;
 import com.example.renting.model.Vehicle;
@@ -13,6 +14,7 @@ import com.example.renting.repository.VehicleRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -28,6 +30,20 @@ public class OrderService {
 
     public List<Order> findAll() {
         return orderRepository.findAll();
+    }
+
+    public List<OrderDTO> findAllDTOs() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(order -> new OrderDTO(
+                        order.getId(),
+                        order.getClient().getName(),
+                        order.getVehicle().getModel(),
+                        order.getStartDate().toString(),
+                        order.getEndDate().toString(),
+                        order.getOrderStatus().name()
+                ))
+                .collect(Collectors.toList());
     }
 
     public Order findById(Integer id) {

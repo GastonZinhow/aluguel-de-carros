@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
+import { Edit, Trash2 } from "lucide-react"; // ícones
 
 const poppins = Poppins({ weight: ["400", "600"], subsets: ["latin"] });
 
@@ -12,9 +14,9 @@ interface Client {
   cpf: string;
   rg: string;
   address: string;
-  profession: string;
-  employer: string;
-  income: string;
+  occupation: string;
+  income: number[];
+  company: string[];
 }
 
 export default function ClientsListPage() {
@@ -36,7 +38,7 @@ export default function ClientsListPage() {
       className={poppins.className}
       style={{
         backgroundColor: "#d3d3d3",
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -48,7 +50,7 @@ export default function ClientsListPage() {
           backgroundColor: "white",
           padding: "2rem",
           borderRadius: "10px",
-          width: "800px",
+          width: "1000px",
           boxShadow: "0 0 15px rgba(0,0,0,0.3)",
         }}
       >
@@ -61,33 +63,47 @@ export default function ClientsListPage() {
             <tr style={{ backgroundColor: "#f0f0f0" }}>
               <th style={{ border: "1px solid #ccc", padding: "8px" }}>Nome</th>
               <th style={{ border: "1px solid #ccc", padding: "8px" }}>CPF</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>RG</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Profissão</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Empresa(s)</th>
+              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Renda</th>
               <th style={{ border: "1px solid #ccc", padding: "8px" }}>Ações</th>
             </tr>
           </thead>
           <tbody>
             {clients.map((c) => (
               <tr key={c.id}>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{c.name}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{c.cpf}</td>
                 <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  <a
-                    href={`/clients/edit?id=${c.id}`}
-                    style={{ marginRight: "10px", color: "#003366" }}
+                  <Link
+                    href={`/cliente/edit/${c.id}`}
+                    style={{ color: "#003366", textDecoration: "underline" }}
                   >
-                    Editar
-                  </a>
+                    {c.name}
+                  </Link>
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{c.cpf}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{c.rg}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{c.occupation}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {c.company.join(", ")}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {c.income.join(", ")}
+                </td>
+                <td style={{ border: "1px solid #ccc", padding: "8px", display: "flex", gap: "0.5rem" }}>
+                  <Link href={`/cliente/edit/${c.id}`} style={{ color: "#003366" }}>
+                    <Edit size={20} />
+                  </Link>
                   <button
                     onClick={() => handleDelete(c.id)}
                     style={{
-                      backgroundColor: "red",
-                      color: "white",
+                      backgroundColor: "transparent",
                       border: "none",
-                      padding: "5px 10px",
-                      borderRadius: "5px",
                       cursor: "pointer",
+                      color: "#DC2626",
                     }}
                   >
-                    Excluir
+                    <Trash2 size={20} />
                   </button>
                 </td>
               </tr>
