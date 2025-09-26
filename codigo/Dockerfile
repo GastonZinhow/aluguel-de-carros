@@ -1,9 +1,9 @@
 # Stage 1: Build frontend (Next.js)
-FROM node:18 AS frontend-build
+FROM node:22 AS frontend-build
 WORKDIR /app/frontend
 COPY codigo/frontend/package*.json ./
 RUN npm install
-COPY codigo/frontend/ .
+COPY codigo/frontend/ ./
 RUN npm run build && npm run export
 
 # Stage 2: Build backend (Spring Boot)
