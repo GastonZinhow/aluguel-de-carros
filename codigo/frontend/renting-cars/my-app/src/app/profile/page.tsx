@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Poppins } from "next/font/google";
+import Header from "../components/Header";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -62,174 +63,179 @@ export default function ProfilePage() {
   };
 
   return (
-    <div
-      className={poppins.className}
-      style={{
-        backgroundColor: "#d3d3d3",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <h1
-        style={{
-          color: "black",
-          marginBottom: "2rem",
-        }}
-      >
-        Sistema de Aluguel de Carros
-      </h1>
-
+    <>
+      <Header></Header>
       <div
+        className={poppins.className}
         style={{
-          backgroundColor: "white",
-          padding: "2rem",
-          borderRadius: "10px",
-          width: "700px",
-          boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+          backgroundColor: "#d3d3d3",
+          height: "100vh",
           display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
           alignItems: "center",
-          gap: "2rem",
         }}
       >
-        {/* Lado esquerdo - Foto */}
-        <div style={{ textAlign: "center" }}>
-          <label htmlFor="fileInput" style={{ cursor: "pointer" }}>
-            <div
+        <h1
+          style={{
+            color: "black",
+            marginBottom: "2rem",
+            fontWeight: "bold",
+            fontSize: "2rem",
+          }}
+        >
+          Sistema de Aluguel de Carros
+        </h1>
+
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "10px",
+            width: "700px",
+            boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "2rem",
+          }}
+        >
+          {/* Lado esquerdo - Foto */}
+          <div style={{ textAlign: "center" }}>
+            <label htmlFor="fileInput" style={{ cursor: "pointer" }}>
+              <div
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  border: "2px dashed #003366",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  overflow: "hidden",
+                  margin: "0 auto",
+                }}
+              >
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Perfil"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <span style={{ color: "#003366" }}>Inserir Foto</span>
+                )}
+              </div>
+            </label>
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/png, image/jpeg"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+
+            {/* Botão de salvar foto */}
+            <button
+              onClick={handleSaveImage}
               style={{
-                width: "200px",
-                height: "200px",
-                borderRadius: "50%",
-                backgroundColor: "#f0f0f0",
-                border: "2px dashed #003366",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
-                margin: "0 auto",
+                marginTop: "1rem",
+                padding: "10px 20px",
+                backgroundColor: "#003366",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
               }}
             >
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Perfil"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <span style={{ color: "#003366" }}>Inserir Foto</span>
-              )}
-            </div>
-          </label>
-          <input
-            type="file"
-            id="fileInput"
-            accept="image/png, image/jpeg"
-            style={{ display: "none" }}
-            onChange={handleImageUpload}
-          />
+              Salvar Foto
+            </button>
+          </div>
 
-          {/* Botão de salvar foto */}
-          <button
-            onClick={handleSaveImage}
-            style={{
-              marginTop: "1rem",
-              padding: "10px 20px",
-              backgroundColor: "#003366",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Salvar Foto
-          </button>
-        </div>
+          {/* Lado direito - Dados */}
+          <div style={{ flex: 1 }}>
+            <h2
+              style={{
+                textAlign: "center",
+                marginBottom: "1rem",
+                color: "#003366",
+              }}
+            >
+              Perfil
+            </h2>
+            <p
+              style={{
+                textAlign: "center",
+                marginBottom: "1.5rem",
+                fontSize: "1.1rem",
+              }}
+            >
+              Bem-vindo, <strong>{username}</strong>!
+            </p>
 
-        {/* Lado direito - Dados */}
-        <div style={{ flex: 1 }}>
-          <h2
-            style={{
-              textAlign: "center",
-              marginBottom: "1rem",
-              color: "#003366",
-            }}
-          >
-            Perfil
-          </h2>
-          <p
-            style={{
-              textAlign: "center",
-              marginBottom: "1.5rem",
-              fontSize: "1.1rem",
-            }}
-          >
-            Bem-vindo, <strong>{username}</strong>!
-          </p>
+            <input
+              type="text"
+              placeholder="Nome"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "1rem",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            />
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "1rem",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "1rem",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            >
+              <option value="USER">Usuário</option>
+              <option value="ADMIN">Admin</option>
+            </select>
 
-          <input
-            type="text"
-            placeholder="Nome"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginBottom: "1rem",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginBottom: "1rem",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          />
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginBottom: "1rem",
-              borderRadius: "5px",
-              border: "1px solid #ccc",
-            }}
-          >
-            <option value="USER">Usuário</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-
-          <button
-            onClick={handleLogout}
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "#003366",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginTop: "1rem",
-            }}
-          >
-            Sair
-          </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                width: "100%",
+                padding: "10px",
+                backgroundColor: "#003366",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                marginTop: "1rem",
+              }}
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -43,11 +43,12 @@ export default function RegisterPage() {
         style={{
           color: "black",
           marginBottom: "2rem",
+          fontWeight: "bold",
+          fontSize: "2rem",
         }}
       >
         Sistema de Aluguel de Carros
       </h1>
-
 
       <form
         onSubmit={handleRegister}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
+import Header from "../components/Header";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -11,11 +12,11 @@ const poppins = Poppins({
 
 export default function VehiclesPage() {
   const [form, setForm] = useState({
-    Placa: "",
-    Registro: "",
-    Ano: "",
-    Marca: "",
-    Modelo: "",
+    plate: "",
+    registration: "",
+    year: 0,
+    brand: "",
+    model: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,70 +28,79 @@ export default function VehiclesPage() {
     try {
       await api.post("/vehicles", form);
       alert("Veículo cadastrado com sucesso!");
-      setForm({ Placa: "", Registro: "", Ano: "", Marca: "", Modelo: "" });
+      setForm({ plate: "", registration: "", year: 0, brand: "", model: "" });
     } catch {
       alert("Erro ao cadastrar veículo!");
     }
   };
 
   return (
-    <div
-      className={poppins.className}
-      style={{
-        backgroundColor: "#d3d3d3",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <>
+      <Header></Header>
+      <div
+        className={poppins.className}
         style={{
-          backgroundColor: "white",
-          padding: "2rem",
-          borderRadius: "10px",
-          width: "500px",
-          boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+          backgroundColor: "#d3d3d3",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#003366" }}>
-          Cadastrar Veículo
-        </h2>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "10px",
+            width: "500px",
+            boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "1rem",
+              color: "#003366",
+            }}
+          >
+            Cadastrar Veículo
+          </h2>
 
-        {["Placa", "Ano", "Marca", "Modelo"].map((field) => (
-          <input
-            key={field}
-            type="text"
-            name={field}
-            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-            value={(form as never)[field]}
-            onChange={handleChange}
+          {["Placa", "Registro", "Ano", "Marca", "Modelo"].map((field) => (
+            <input
+              key={field}
+              type="text"
+              name={field}
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              value={(form as never)[field]}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "1rem",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            />
+          ))}
+
+          <button
+            type="submit"
             style={{
               width: "100%",
               padding: "10px",
-              marginBottom: "1rem",
+              backgroundColor: "#003366",
+              color: "white",
+              border: "none",
               borderRadius: "5px",
-              border: "1px solid #ccc",
+              cursor: "pointer",
             }}
-          />
-        ))}
-
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#003366",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Salvar
-        </button>
-      </form>
-    </div>
+          >
+            Salvar
+          </button>
+        </form>
+      </div>
+    </>
   );
 }

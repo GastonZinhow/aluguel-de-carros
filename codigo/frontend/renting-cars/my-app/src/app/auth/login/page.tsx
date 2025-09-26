@@ -43,6 +43,8 @@ export default function LoginPage() {
         style={{
           color: "black",
           marginBottom: "2rem",
+          fontWeight: "bold",
+          fontSize: "2rem",
         }}
       >
         Sistema de Aluguel de Carros
@@ -117,7 +119,7 @@ export default function LoginPage() {
         >
           Não tem uma conta?{" "}
           <span
-            onClick={() => router.push("/register")}
+            onClick={() => router.push("/auth/register")}
             style={{
               color: "#003366",
               cursor: "pointer",
