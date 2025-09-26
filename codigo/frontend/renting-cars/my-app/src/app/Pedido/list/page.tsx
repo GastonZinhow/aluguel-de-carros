@@ -6,12 +6,27 @@ import { Poppins } from "next/font/google";
 
 const poppins = Poppins({ weight: ["400", "600"], subsets: ["latin"] });
 
+interface OrderResponse {
+  id: number;
+  client: {
+    id: number;
+    name: string;
+  };
+  vehicle: {
+    id: number;
+    model: string;
+  };
+  startDate: string;
+  endDate: string;
+  orderStatus: string;
+}
+
 interface Order {
   id: number;
   clientName: string;
   vehicleModel: string;
-  startDate: string; 
-  endDate: string; 
+  startDate: string;
+  endDate: string;
   status: string;
 }
 
@@ -19,15 +34,33 @@ export default function OrdersListPage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    api.get<Order[]>("/orders").then((res) => setOrders(res.data));
+    api.get<OrderResponse[]>("/orders").then((res) => {
+      const mapped: Order[] = res.data.map((o) => ({
+        id: o.id,
+        clientName: o.client?.name ?? "—",
+        vehicleModel: o.vehicle?.model ?? "—",
+        startDate: o.startDate,
+        endDate: o.endDate,
+        status: o.orderStatus,
+      }));
+      setOrders(mapped);
+    }).catch((err) => {
+      console.error("Erro ao buscar pedidos:", err);
+    });
   }, []);
+
+  const formatDate = (date: string) => {
+    if (!date) return "—";
+    const d = new Date(date);
+    return d.toLocaleDateString("pt-BR");
+  };
 
   return (
     <div
       className={poppins.className}
       style={{
         backgroundColor: "#d3d3d3",
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -43,7 +76,13 @@ export default function OrdersListPage() {
           boxShadow: "0 0 15px rgba(0,0,0,0.3)",
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#003366" }}>
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "1rem",
+            color: "#003366",
+          }}
+        >
           Meus Pedidos
         </h2>
 
@@ -62,8 +101,8 @@ export default function OrdersListPage() {
               <tr key={o.id}>
                 <td style={{ border: "1px solid #ccc", padding: "8px" }}>{o.clientName}</td>
                 <td style={{ border: "1px solid #ccc", padding: "8px" }}>{o.vehicleModel}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{o.startDate}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{o.endDate}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{formatDate(o.startDate)}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{formatDate(o.endDate)}</td>
                 <td style={{ border: "1px solid #ccc", padding: "8px" }}>{o.status}</td>
               </tr>
             ))}
