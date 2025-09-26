@@ -1,20 +1,17 @@
 # Stage 1: Build frontend (Next.js)
 FROM node:18 AS frontend-build
 WORKDIR /app/frontend
-# Copia apenas os package.json para instalar dependências
-COPY frontend/package*.json ./
+COPY codigo/frontend/package*.json ./
 RUN npm install
-# Copia todo o frontend
-COPY frontend/ .
+COPY codigo/frontend/ .
 RUN npm run build && npm run export
 
 # Stage 2: Build backend (Spring Boot)
 FROM maven:3.9-eclipse-temurin-17 AS backend-build
 WORKDIR /app
-COPY backend/pom.xml . 
+COPY codigo/backend/pom.xml .
 RUN mvn dependency:go-offline
-COPY backend/ .
-# Copia o frontend exportado para dentro do Spring Boot
+COPY codigo/backend/ .
 COPY --from=frontend-build /app/frontend/out ./src/main/resources/static
 RUN mvn clean package -DskipTests
 
