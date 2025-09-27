@@ -1,31 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
 import Header from "@/app/components/Header";
-import Head from "next/head";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
-type OrderForm = {
-  clientId: string;
-  vehicleId: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-};
-
-type Client = {
-  id: number;
-  name: string;
-};
-
-type Vehicle = {
-  id: number;
+type VehicleForm = {
+  plate: string;
+  registration: string;
+  year: number;
+  brand: string;
   model: string;
 };
 
@@ -38,38 +27,24 @@ type AxiosErrorResponse = {
   };
 };
 
-export default function CreateOrderPage() {
-  const [form, setForm] = useState<OrderForm>({
-    clientId: "",
-    vehicleId: "",
-    startDate: "",
-    endDate: "",
-    status: "AGUARDANDO_PAGAMENTO",
+export default function CreateVehiclePage() {
+  const [form, setForm] = useState<VehicleForm>({
+    plate: "",
+    registration: "",
+    year: 0,
+    brand: "",
+    model: "",
   });
 
-  const [clients, setClients] = useState<Client[]>([]);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>();
 
-  useEffect(() => {
-    api.get<Client[]>("/clients").then((res) => setClients(res.data));
-    api.get<Vehicle[]>("/vehicles").then((res) => setVehicles(res.data));
-  }, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!form.clientId || !form.vehicleId) {
-      alert("Você precisa selecionar um cliente e um veículo!");
-      return;
-    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -78,19 +53,19 @@ export default function CreateOrderPage() {
     }
 
     try {
-      await api.post<OrderForm>("/orders", form, {
+      await api.post<VehicleForm>("/vehicles", form, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setSuccessMessage("Pedido criado com sucesso!");
+      setSuccessMessage("Veículo cadastrado com sucesso!");
       setForm({
-        clientId: "",
-        vehicleId: "",
-        startDate: "",
-        endDate: "",
-        status: "AGUARDANDO_PAGAMENTO",
+        plate: "",
+        registration: "",
+        year: 0,
+        brand: "",
+        model: "",
       });
 
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -100,12 +75,12 @@ export default function CreateOrderPage() {
 
       if (err.response?.status === 403) {
         alert(
-          "Você não tem permissão para criar pedidos. Faça login novamente."
+          "Você não tem permissão para criar veículos. Faça login novamente."
         );
       } else if (err.response?.data?.message) {
         alert(`Erro: ${err.response.data.message}`);
       } else {
-        alert("Erro ao criar pedido!");
+        alert("Erro ao cadastrar veículo!");
       }
     }
   };
@@ -140,75 +115,58 @@ export default function CreateOrderPage() {
               color: "#003366",
             }}
           >
-            Criar Pedido
+            Cadastrar Veículo
           </h2>
 
-          <select
-            name="clientId"
-            value={form.clientId}
-            onChange={handleChange}
-            style={inputStyle}
-            required
-          >
-            <option value="" disabled>
-              Selecione um Cliente
-            </option>
-            {clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="vehicleId"
-            value={form.vehicleId}
-            onChange={handleChange}
-            style={inputStyle}
-            required
-          >
-            <option value="" disabled>
-              Selecione um Veículo
-            </option>
-            {vehicles.map((vehicle) => (
-              <option key={vehicle.id} value={vehicle.id}>
-                {vehicle.model}
-              </option>
-            ))}
-          </select>
-
           <input
-            type="date"
-            name="startDate"
-            placeholder="Data de Início"
-            value={form.startDate}
+            type="text"
+            name="plate"
+            placeholder="Placa"
+            value={form.plate}
             onChange={handleChange}
             style={inputStyle}
             required
           />
 
           <input
-            type="date"
-            name="endDate"
-            placeholder="Data de Término"
-            value={form.endDate}
+            type="text"
+            name="registration"
+            placeholder="Registro"
+            value={form.registration}
             onChange={handleChange}
             style={inputStyle}
             required
           />
 
-          <select
-            name="status"
-            value={form.status}
+          <input
+            type="number"
+            name="year"
+            placeholder="Ano"
+            value={form.year}
             onChange={handleChange}
             style={inputStyle}
-          >
-            <option value="AGUARDANDO_PAGAMENTO">Aguardando Pagamento</option>
-            <option value="PAGO">Pago</option>
-            <option value="ENVIADO">Enviado</option>
-            <option value="ENTREGUE">Entregue</option>
-            <option value="CANCELADO">Cancelado</option>
-          </select>
+            required
+          />
+
+          <input
+            type="text"
+            name="brand"
+            placeholder="Marca"
+            value={form.brand}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+
+          <input
+            type="text"
+            name="model"
+            placeholder="Modelo"
+            value={form.model}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
 
           <button
             type="submit"

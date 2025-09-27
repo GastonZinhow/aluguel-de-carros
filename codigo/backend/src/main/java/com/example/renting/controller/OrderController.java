@@ -28,19 +28,25 @@ public class OrderController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Order> findById(@PathVariable Integer id) {
-        Order obj = orderService.findById(id);
+    public ResponseEntity<OrderDTO> findById(@PathVariable Integer id) {
+        OrderDTO obj = orderService.findByIdDTO(id);
         return ResponseEntity.ok().body(obj);
     }
 
     @PostMapping
-    public ResponseEntity<Order> insert(@RequestBody Order obj) {
-        obj = orderService.createOrder(obj);
+    public ResponseEntity<Order> insert(@RequestBody OrderDTO objDTO) {
+        Order obj = orderService.createOrderFromDTO(objDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(obj.getId())
                 .toUri();
         return ResponseEntity.created(uri).body(obj);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Integer id, @RequestBody OrderDTO orderDTO) {
+        Order updatedOrder = orderService.updateOrderFromDTO(id, orderDTO);
+        return ResponseEntity.ok(updatedOrder);
     }
 
     @PatchMapping("/{id}/status")
@@ -51,7 +57,7 @@ public class OrderController {
         if (updated) {
             return ResponseEntity.ok("Status atualizado com sucesso!");
         } else {
-            return ResponseEntity.badRequest().body("Status inválido ou ordem não encontrada.");
+            return ResponseEntity.badRequest().body("Status inválido ou pedido não encontrado.");
         }
     }
 

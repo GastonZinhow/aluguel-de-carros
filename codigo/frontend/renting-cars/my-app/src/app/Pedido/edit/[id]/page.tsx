@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import api from "@/utils/axios";
 import { Poppins } from "next/font/google";
 import Header from "@/app/components/Header";
-import Head from "next/head";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -12,8 +12,8 @@ const poppins = Poppins({
 });
 
 type OrderForm = {
-  clientId: string;
-  vehicleId: string;
+  clientId: number;
+  vehicleId: number;
   startDate: string;
   endDate: string;
   status: string;
@@ -29,19 +29,11 @@ type Vehicle = {
   model: string;
 };
 
-type AxiosErrorResponse = {
-  response?: {
-    status?: number;
-    data?: {
-      message?: string;
-    };
-  };
-};
-
-export default function CreateOrderPage() {
+export default function EditOrderPage() {
+  const { id } = useParams();
   const [form, setForm] = useState<OrderForm>({
-    clientId: "",
-    vehicleId: "",
+    clientId: 0,
+    vehicleId: 0,
     startDate: "",
     endDate: "",
     status: "AGUARDANDO_PAGAMENTO",
@@ -52,9 +44,17 @@ export default function CreateOrderPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>();
 
   useEffect(() => {
+    // Carregar clientes e veículos cadastrados
     api.get<Client[]>("/clients").then((res) => setClients(res.data));
     api.get<Vehicle[]>("/vehicles").then((res) => setVehicles(res.data));
-  }, []);
+
+    // Carregar os dados do pedido atual
+    if (id) {
+      api.get(`/orders/${id}`).then((res) => {
+        setForm(res.data);
+      });
+    }
+  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -65,48 +65,13 @@ export default function CreateOrderPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!form.clientId || !form.vehicleId) {
-      alert("Você precisa selecionar um cliente e um veículo!");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Você precisa estar logado!");
-      return;
-    }
-
     try {
-      await api.post<OrderForm>("/orders", form, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setSuccessMessage("Pedido criado com sucesso!");
-      setForm({
-        clientId: "",
-        vehicleId: "",
-        startDate: "",
-        endDate: "",
-        status: "AGUARDANDO_PAGAMENTO",
-      });
-
+      await api.put(`/orders/${id}`, form);
+      setSuccessMessage("Pedido atualizado com sucesso!");
       setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (error: unknown) {
-      const err = error as AxiosErrorResponse;
+    } catch (err) {
       console.error(err);
-
-      if (err.response?.status === 403) {
-        alert(
-          "Você não tem permissão para criar pedidos. Faça login novamente."
-        );
-      } else if (err.response?.data?.message) {
-        alert(`Erro: ${err.response.data.message}`);
-      } else {
-        alert("Erro ao criar pedido!");
-      }
+      alert("Erro ao atualizar pedido!");
     }
   };
 
@@ -116,11 +81,12 @@ export default function CreateOrderPage() {
       <div
         className={poppins.className}
         style={{
-          backgroundColor: "#d3d3d3",
-          height: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          minHeight: "100vh",
+          backgroundColor: "#d3d3d3",
+          padding: "2rem",
         }}
       >
         <form
@@ -140,7 +106,7 @@ export default function CreateOrderPage() {
               color: "#003366",
             }}
           >
-            Criar Pedido
+            Editar Pedido
           </h2>
 
           <select
@@ -222,7 +188,7 @@ export default function CreateOrderPage() {
               cursor: "pointer",
             }}
           >
-            Salvar
+            Salvar Alterações
           </button>
 
           {successMessage && (

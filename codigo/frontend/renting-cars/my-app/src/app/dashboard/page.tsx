@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
-import Header from "@/app/components/Header"; // Importando o Header
+import Header from "@/app/components/Header";
+import api from "@/utils/axios";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -58,15 +59,22 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
 export default function DashboardPage() {
   const [username, setUsername] = useState("");
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalVehicles, setTotalVehicles] = useState(0);
+  const [totalClients, setTotalClients] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("username");
     if (user) setUsername(user);
+
+    api.get("/orders").then((res) => setTotalOrders(res.data.length));
+    api.get("/vehicles").then((res) => setTotalVehicles(res.data.length));
+    api.get("/clients").then((res) => setTotalClients(res.data.length));
   }, []);
 
   return (
     <>
-      <Header />
+      <Header></Header>
       <div
         className={`${poppins.className} min-h-screen bg-gradient-to-b from-[#d3d3d3] to-[#f5f5f5] flex flex-col`}
       >
@@ -92,9 +100,21 @@ export default function DashboardPage() {
         >
           <div className="w-full max-w-6xl mb-20">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              <StatCard title="Total de Pedidos" value="5" icon="📋" />
-              <StatCard title="Contratos Ativos" value="2" icon="✍️" />
-              <StatCard title="Veículos Cadastrados" value="8" icon="🚗" />
+              <StatCard
+                title="Total de Pedidos"
+                value={totalOrders.toString()}
+                icon="📋"
+              />
+              <StatCard
+                title="Clientes Cadastrados"
+                value={totalClients.toString()}
+                icon="🧑‍💼"
+              />
+              <StatCard
+                title="Veículos Cadastrados"
+                value={totalVehicles.toString()}
+                icon="🚗"
+              />
             </div>
           </div>
           <h2 className="text-3xl font-bold text-[#003366] my-14 text-center">
@@ -102,19 +122,19 @@ export default function DashboardPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-10">
             <ActionCard
-              href="/Pedido"
+              href="/Pedido/list"
               title="Gerenciar Pedidos"
               description="Visualize e avalie os pedidos de aluguel."
               icon="📋"
             />
             <ActionCard
-              href="/cliente/create"
+              href="/cliente/list"
               title="Gerenciar Clientes"
               description="Gerencie e cadastre os clientes."
               icon="🧑‍💼"
             />
             <ActionCard
-              href="/Veiculo"
+              href="/Veiculo/list"
               title="Gerenciar Veículos"
               description="Cadastre e edite os automóveis."
               icon="🚗"

@@ -9,47 +9,47 @@ import Header from "@/app/components/Header";
 
 const poppins = Poppins({ weight: ["400", "600"], subsets: ["latin"] });
 
-interface Client {
+interface Vehicle {
   id: number;
-  name: string;
-  cpf: string;
-  rg: string;
-  address: string;
-  occupation: string;
-  income: number[];
-  company: string[];
+  plate: string;
+  registration: string;
+  year: number;
+  brand: string;
+  model: string;
 }
 
-export default function ClientsListPage() {
-  const [clients, setClients] = useState<Client[]>([]);
+export default function VehiclesListPage() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [clientToDelete, setClientToDelete] = useState<number | null>();
+  const [vehicleToDelete, setVehicleToDelete] = useState<number | null>();
   const [hasOrders, setHasOrders] = useState(false);
 
   useEffect(() => {
-    api.get<Client[]>("/clients").then((res) => setClients(res.data));
+    api.get<Vehicle[]>("/vehicles").then((res) => setVehicles(res.data));
   }, []);
 
   const handleDelete = async () => {
-    if (clientToDelete !== null) {
-      await api.delete(`/clients/${clientToDelete}`);
-      setClients((prev) => prev.filter((c) => c.id !== clientToDelete));
+    if (vehicleToDelete !== null) {
+      await api.delete(`/vehicles/${vehicleToDelete}`);
+      setVehicles((prev) =>
+        prev.filter((vehicle) => vehicle.id !== vehicleToDelete)
+      );
       setShowModal(false);
-      setClientToDelete(null);
+      setVehicleToDelete(null);
       setHasOrders(false);
     }
   };
 
   const openModal = async (id: number) => {
-    setClientToDelete(id);
-    const response = await api.get(`/orders?clientId=${id}`);
+    setVehicleToDelete(id);
+    const response = await api.get(`/orders?vehicleId=${id}`);
     setHasOrders(response.data.length > 0);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
-    setClientToDelete(null);
+    setVehicleToDelete(null);
     setHasOrders(false);
   };
 
@@ -62,7 +62,6 @@ export default function ClientsListPage() {
           backgroundColor: "#d3d3d3",
           minHeight: "100vh",
           padding: "2rem",
-          position: "relative",
         }}
       >
         <div
@@ -73,7 +72,6 @@ export default function ClientsListPage() {
             width: "1000px",
             boxShadow: "0 0 15px rgba(0,0,0,0.3)",
             margin: "0 auto",
-            marginTop: "2rem",
           }}
         >
           <div
@@ -83,9 +81,9 @@ export default function ClientsListPage() {
               alignItems: "center",
             }}
           >
-            <h2 style={{ color: "#003366" }}>Lista de Clientes</h2>
+            <h2 style={{ color: "#003366" }}>Lista de Veículos</h2>
             <Link
-              href="/cliente/create"
+              href="/Veiculo/create"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -98,7 +96,7 @@ export default function ClientsListPage() {
               }}
             >
               <PlusCircle size={20} />
-              Criar Cliente
+              Criar Veículo
             </Link>
           </div>
 
@@ -112,14 +110,19 @@ export default function ClientsListPage() {
             <thead>
               <tr style={{ backgroundColor: "#f0f0f0" }}>
                 <th style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  Nome
+                  Placa
                 </th>
                 <th style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  CPF
+                  Registro
                 </th>
-                <th style={{ border: "1px solid #ccc", padding: "8px" }}>RG</th>
                 <th style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  Profissão
+                  Ano
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  Marca
+                </th>
+                <th style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  Modelo
                 </th>
                 <th style={{ border: "1px solid #ccc", padding: "8px" }}>
                   Ações
@@ -127,19 +130,22 @@ export default function ClientsListPage() {
               </tr>
             </thead>
             <tbody>
-              {clients.map((c) => (
-                <tr key={c.id}>
+              {vehicles.map((vehicle) => (
+                <tr key={vehicle.id}>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                    {c.name}
+                    {vehicle.plate}
                   </td>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                    {c.cpf}
+                    {vehicle.registration}
                   </td>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                    {c.rg}
+                    {vehicle.year}
                   </td>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                    {c.occupation}
+                    {vehicle.brand}
+                  </td>
+                  <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                    {vehicle.model}
                   </td>
                   <td
                     style={{
@@ -152,13 +158,13 @@ export default function ClientsListPage() {
                     }}
                   >
                     <Link
-                      href={`/cliente/edit/${c.id}`}
+                      href={`/Veiculo/edit/${vehicle.id}`}
                       style={{ color: "#003366" }}
                     >
                       <Edit size={20} />
                     </Link>
                     <button
-                      onClick={() => openModal(c.id)}
+                      onClick={() => openModal(vehicle.id)}
                       style={{
                         backgroundColor: "transparent",
                         border: "none",
@@ -205,8 +211,8 @@ export default function ClientsListPage() {
               </h3>
               <p style={{ marginBottom: "1.5rem" }}>
                 {hasOrders
-                  ? "Este cliente está associado a um ou mais pedidos. Excluir este cliente também excluirá os pedidos associados. Tem certeza de que deseja continuar?"
-                  : "Tem certeza de que deseja excluir este cliente?"}
+                  ? "Este veículo está associado a um ou mais pedidos. Excluir este veículo também excluirá os pedidos associados. Tem certeza de que deseja continuar?"
+                  : "Tem certeza de que deseja excluir este veículo?"}
               </p>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <button

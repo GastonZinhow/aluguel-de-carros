@@ -1,7 +1,10 @@
 package com.example.renting.service;
 
 import com.example.renting.model.Client;
+import com.example.renting.model.Order;
 import com.example.renting.repository.ClientRepository;
+import com.example.renting.repository.OrderRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +18,15 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
 
-    public Client registerClient(Client client){
-        try{
-            if(client == null){
+    public Client registerClient(Client client) {
+        try {
+            if (client == null) {
                 throw new IllegalArgumentException("Cliente nao pode ser null");
             }
-            if(clientRepository.existsByCpf(client.getCpf())){
+            if (clientRepository.existsByCpf(client.getCpf())) {
                 throw new IllegalArgumentException("CPF ja cadastrado");
             }
 
@@ -33,30 +38,30 @@ public class ClientService {
     }
 
     public List<Client> findAll() {
-		return clientRepository.findAll();
-	}
+        return clientRepository.findAll();
+    }
 
-    public Client findById(Integer id){
+    public Client findById(Integer id) {
         Optional<Client> client = clientRepository.findById(id);
         try {
             if (!client.isPresent()) {
                 throw new RuntimeException("Cliente nao encontrado");
             }
             return client.get();
-        }catch (Exception e) {
-            throw new RuntimeException("erro: "+ e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("erro: " + e.getMessage());
         }
     }
 
-    public Client findByCpf(String cpf){
+    public Client findByCpf(String cpf) {
         Optional<Client> client = clientRepository.findByCpf(cpf);
         try {
             if (!client.isPresent()) {
                 throw new RuntimeException("Cliente nao encontrado");
             }
             return client.get();
-        }catch (Exception e) {
-            throw new RuntimeException("erro: "+ e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("erro: " + e.getMessage());
         }
     }
 
@@ -66,7 +71,7 @@ public class ClientService {
         }
 
         Client existingClient = clientRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado com ID: " + id));
 
         existingClient.setName(newData.getName());
         existingClient.setCpf(newData.getCpf());
@@ -84,6 +89,10 @@ public class ClientService {
             Optional<Client> client = clientRepository.findById(id);
 
             if (client.isPresent()) {
+                List<Order> orders = orderRepository.findByClientId(id);
+                if (!orders.isEmpty()) {
+                    orderRepository.deleteAll(orders);
+                }
                 clientRepository.deleteById(id);
                 return true;
             }

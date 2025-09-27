@@ -56,7 +56,7 @@ export default function Header() {
             Clientes
           </Link>
           <Link
-            href="/Veiculo"
+            href="/Veiculo/list"
             className={`hover:underline ${
               pathname === "/Veiculo" ? "font-bold underline" : ""
             }`}
