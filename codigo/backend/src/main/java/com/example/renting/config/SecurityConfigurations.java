@@ -9,7 +9,6 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,9 +28,9 @@ public class SecurityConfigurations {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(List.of("*"));
-                    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfig.setAllowedHeaders(List.of("*"));
+                    corsConfig.addAllowedOriginPattern("*");
+                    corsConfig.addAllowedMethod("*");
+                    corsConfig.addAllowedHeader("*");
                     corsConfig.setAllowCredentials(true);
                     return corsConfig;
                 }))
