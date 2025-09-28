@@ -37,7 +37,7 @@ public class SecurityConfigurations {
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/login").permitAll()
+                        .requestMatchers("/auth/**", "/login/**").permitAll()
                         .requestMatchers("/vehicles", "/vehicles/**").permitAll()
                         .requestMatchers("/orders/**").hasRole("ADMIN")
                         .requestMatchers("/agents/**").permitAll()
