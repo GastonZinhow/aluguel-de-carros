@@ -76,7 +76,7 @@ export default function OrdersListPage() {
           >
             <h2 style={{ color: "#003366" }}>Lista de Pedidos</h2>
             <Link
-              href="/Pedido/create"
+              href="/Pedido/Create"
               style={{
                 display: "flex",
                 alignItems: "center",
