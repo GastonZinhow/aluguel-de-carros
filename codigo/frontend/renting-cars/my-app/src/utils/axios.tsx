@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.API_URL, 
+  baseURL: 'https://aluguel-de-carros-production-2778.up.railway.app', 
 });
 
 api.interceptors.request.use((config) => {
