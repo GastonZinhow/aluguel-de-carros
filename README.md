@@ -54,21 +54,19 @@ Ele possibilita:
 ## Tecnologias utilizadas  
 
 ### Front-end  
-- React  
-- Vite.js  
-- Tailwind CSS / Ant Design  
+- React
 
 ### Back-end  
 - Java 21  
 - Spring Boot 3  
-- Spring MVC  
+- Spring MVC
+- Spring Security
 - Spring Data JPA  
 
 ### Banco de dados  
 - MySQL  
 
-### Testes  
-- JUnit 5  
+### Testes   
 - Postman para integração  
 
 ---
