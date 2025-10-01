@@ -11,16 +11,16 @@ import lombok.*;
 @Table(name = "agents")
 public class Agent {
 
- @Id
- @GeneratedValue(strategy = GenerationType.IDENTITY)
- private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
- @Column(nullable = false)
- private String name;
+    @Column(nullable = false)
+    private String name;
 
- @Column(nullable = false, unique = true)
- private String cnpj;
+    @Column(nullable = false, unique = true)
+    private String cnpj;
 
- @Column(nullable = false)
- private String type; 
+    @Column(nullable = false)
+    private String type; 
 }
