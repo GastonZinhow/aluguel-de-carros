@@ -16,7 +16,7 @@ public class Contract {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "orders_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @ManyToOne
